@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import static com.example.mbennett.myapplication.R.id.introText;
+import static java.lang.Math.pow;
 
 public class MainActivity extends Activity implements SensorEventListener {
 
@@ -29,8 +30,9 @@ public class MainActivity extends Activity implements SensorEventListener {
     TextView star;
     private float last_posX, last_posY, posX, posY;
 
-    float xmax = 100;
-    float ymax = 200;
+    float xmax = 250;
+    float ymax = 700;
+
 
 
     @Override
@@ -45,9 +47,10 @@ public class MainActivity extends Activity implements SensorEventListener {
         IntroText = (TextView) findViewById(R.id.introText);
         IntroText.setText("testing");
         star = (TextView) findViewById(R.id.star);
-        last_posX = star.getX();
-        last_posY = star.getY();
 
+
+        last_posX = star.getX()/3779;
+        last_posY = star.getY()/3779;
 
     }
 
@@ -56,45 +59,48 @@ public class MainActivity extends Activity implements SensorEventListener {
         Sensor mySensor = sensorEvent.sensor;
 
         if(mySensor.getType() == Sensor.TYPE_ACCELEROMETER){ //Check to make sure this is the correct sensor type
-            float x = sensorEvent.values[0]; //acceleration (minus gravity) on each respective axis)
-            float y = sensorEvent.values[1];
+            float x = sensorEvent.values[0]*-1; //acceleration (minus gravity) on each respective axis)
+            float y = sensorEvent.values[1]*-1;
             float z = sensorEvent.values[2];
 
             long curTime = System.currentTimeMillis(); //storing the systems current time in milliseconds
 
-           // if ((curTime - lastUpdate) > 100){ //test to make sure that it has been more than 100 milliseconds since this was last run
-                long diffTime = curTime - lastUpdate;
+         //   if ((curTime - lastUpdate) > 100){ //test to make sure that it has been more than 100 milliseconds since this was last run
+
+
+                float diffTime = curTime - lastUpdate;
                 lastUpdate = curTime;
-
-                speedX = speedX + x*diffTime;
+                diffTime = diffTime/1000;
+            
                 posX = 1/2*x*diffTime*diffTime + speedX*diffTime + last_posX;
+                speedX = x*diffTime;
 
-                speedY = speedY + y*diffTime;
                 posY = 1/2*y*diffTime*diffTime + speedY*diffTime + last_posY;
+                speedY = y*diffTime;
 
-            if (posX > xmax)
-                  posX = xmax;
-            else if (posX < 0)
-                posX = 0;
-            if(posY > ymax)
-                posY = ymax;
-            else if(posY < 0)
-                posY = 0;
+                posX = posX*3779;
+                posY = posY*3779;
 
+                if (posX > xmax)
+                      posX = xmax;
+                else if (posX < 0)
+                    posX = 0;
+                if(posY > ymax)
+                    posY = ymax;
+                else if(posY < 0)
+                    posY = 0;
 
-            star.setX(posX);
-            star.setY(posY);
+                star.setX(posX);
+                star.setY(posY);
 
-            last_posX = posX;
-            last_posY = posY;
+                last_posX = posX;
+                last_posY = posY;
 
                /* if(speed > SHAKE_THRESHOLD){
                     Toast.makeText(getApplicationContext(), "Speed by Cheating:"+speed, Toast.LENGTH_LONG);
                     IntroText.setText("Shake Shake, Shake Shake, ah Shake YA!");
                 }*/
-
-
-          //  }
+           // }
         }
     }
 
